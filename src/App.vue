@@ -143,10 +143,10 @@ const handleBatchDeleteCompleted = async () => {
 };
 
 // 添加任务（从右键菜单调用）
-const addTaskFromSelection = async (content: string, blockId: string) => {
+const addTaskFromSelection = async (content: string, blockId: string, isManual: boolean = false) => {
   try {
     await withTransition(async () => {
-      await taskManager.addTask(content, blockId);
+      await taskManager.addTask(content, blockId, undefined, isManual);
       refreshTasks();
     });
 
@@ -162,7 +162,7 @@ const handleAddTaskManually = async (content: string, note?: string) => {
   try {
     await withTransition(async () => {
       const manualBlockId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      await taskManager.addTask(content, manualBlockId, note);
+      await taskManager.addTask(content, manualBlockId, note, true);
       refreshTasks();
     });
 

@@ -33,6 +33,7 @@
   "taskContentPlaceholder": "Enter task content...",
   "taskNote": "Note",
   "taskNotePlaceholder": "Add note (optional)...",
+  "taskContentReadonlyHint": "This task is from a note block, title cannot be edited",
   "save": "Save",
   "cancel": "Cancel",
   "confirm": "Confirm"

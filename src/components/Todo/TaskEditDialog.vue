@@ -8,13 +8,25 @@
         </div>
 
         <div class="task-dialog__body">
-          <div class="form-group">
+          <!-- 只有手动任务或新建任务时才显示内容编辑框 -->
+          <div v-if="!task || task.isManual" class="form-group">
             <label>{{ i18n.taskContent }}</label>
             <SyTextarea
               v-model="formData.content"
               :placeholder="i18n.taskContentPlaceholder"
               :rows="3"
             />
+          </div>
+
+          <!-- 从笔记添加的任务显示只读的标题 -->
+          <div v-else class="form-group">
+            <label>{{ i18n.taskContent }}</label>
+            <div class="task-content-readonly">
+              {{ formData.content }}
+            </div>
+            <div class="task-content-hint">
+              {{ i18n.taskContentReadonlyHint || '此任务来自笔记块，标题不可编辑' }}
+            </div>
           </div>
 
           <div class="form-group">
@@ -91,10 +103,18 @@ const handleSave = () => {
     return
   }
 
-  emit('save', {
-    content: formData.value.content.trim(),
-    note: formData.value.note.trim() || undefined
-  })
+  // 如果是从笔记添加的任务，只更新备注，不更新内容
+  if (props.task && !props.task.isManual) {
+    emit('save', {
+      content: props.task.content, // 保持原内容不变
+      note: formData.value.note.trim() || undefined
+    })
+  } else {
+    emit('save', {
+      content: formData.value.content.trim(),
+      note: formData.value.note.trim() || undefined
+    })
+  }
 }
 
 const handleCancel = () => {
@@ -195,6 +215,24 @@ const handleCancel = () => {
         width: 100%;
         box-sizing: border-box;
       }
+    }
+
+    .task-content-readonly {
+      padding: 8px 12px;
+      background-color: var(--b3-theme-surface);
+      border: 1px solid var(--b3-border-color);
+      border-radius: var(--b3-border-radius);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--b3-theme-on-surface);
+      word-break: break-word;
+    }
+
+    .task-content-hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--b3-theme-on-surface-light);
+      font-style: italic;
     }
   }
 

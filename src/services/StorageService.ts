@@ -5,6 +5,7 @@
 
 import type { Plugin } from 'siyuan'
 import type { Task, BlockInfo, StorageData } from '@/types/todo'
+import { openTab } from 'siyuan'
 
 export class StorageService {
   private plugin: Plugin
@@ -82,14 +83,15 @@ export class StorageService {
    */
   async openBlock(blockId: string): Promise<boolean> {
     try {
-      await this.callSiyuanAPI(async () => {
-        const response = await fetch('/api/filetree/openBlock', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: blockId })
-        })
-        return await response.json()
+      // 使用思源的 openTab 方法打开块
+      openTab({
+        app: this.plugin.app,
+        doc: {
+          id: blockId,
+          action: ['cb-get-focus']  // 聚焦到该块
+        }
       })
+
       return true
     } catch (error) {
       console.error('打开块失败:', error)
@@ -162,7 +164,9 @@ export class StorageService {
   private isValidBlockId(blockId: string): boolean {
     // 思源Block ID格式: 20位时间戳-7位随机字符
     const blockIdRegex = /^\d{14}-[a-z0-9]{7}$/
-    return blockIdRegex.test(blockId)
+    // 手动添加的任务使用 manual- 前缀
+    const manualIdRegex = /^manual-/
+    return blockIdRegex.test(blockId) || manualIdRegex.test(blockId)
   }
 
   /**

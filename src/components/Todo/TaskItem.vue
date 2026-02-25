@@ -11,7 +11,18 @@
     </div>
 
     <div class="task-item__content">
-      <div class="task-item__text">{{ task.content }}</div>
+      <!-- 如果是从笔记添加的任务，标题显示为可点击的链接 -->
+      <div
+        v-if="!task.isManual"
+        class="task-item__text task-item__text--link"
+        @click="handleNavigate"
+        :title="i18n.jumpToSource"
+      >
+        {{ task.content }}
+      </div>
+      <!-- 如果是手动添加的任务，标题显示为普通文本 -->
+      <div v-else class="task-item__text">{{ task.content }}</div>
+
       <div v-if="task.note" class="task-item__note">
         {{ task.note }}
       </div>
@@ -29,7 +40,9 @@
     </div>
 
     <div class="task-item__actions">
+      <!-- 只有手动添加的任务才显示编辑按钮 -->
       <button
+        v-if="task.isManual"
         class="task-item__edit"
         :title="i18n.editTask"
         @click="handleEdit"
@@ -65,6 +78,7 @@ interface Emits {
   (e: 'statusChange', taskId: string, status: 'todo' | 'completed'): void
   (e: 'delete', taskId: string): void
   (e: 'edit', taskId: string): void
+  (e: 'navigate', blockId: string): void
 }
 
 const props = defineProps<Props>()
@@ -81,6 +95,10 @@ const handleEdit = () => {
 
 const handleDelete = () => {
   emit('delete', props.task.id)
+}
+
+const handleNavigate = () => {
+  emit('navigate', props.task.blockId)
 }
 
 const formatTime = (timestamp: number): string => {
@@ -126,6 +144,22 @@ const formatTime = (timestamp: number): string => {
     line-height: 1.5;
     word-break: break-word;
     margin-bottom: 4px;
+
+    &--link {
+      color: var(--b3-theme-primary);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+
+      &:hover {
+        text-decoration: underline;
+        opacity: 0.8;
+      }
+
+      &:active {
+        opacity: 0.6;
+      }
+    }
   }
 
   &__note {

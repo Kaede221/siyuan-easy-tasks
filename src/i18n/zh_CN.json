@@ -33,6 +33,7 @@
   "taskContentPlaceholder": "请输入任务内容...",
   "taskNote": "备注",
   "taskNotePlaceholder": "添加备注（可选）...",
+  "taskContentReadonlyHint": "此任务来自笔记块，标题不可编辑",
   "save": "保存",
   "cancel": "取消",
   "confirm": "确定"

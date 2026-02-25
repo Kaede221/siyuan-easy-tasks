@@ -22,6 +22,7 @@ export interface Task {
   completedAt?: number    // 完成时间戳 (毫秒，可选)
   note?: string           // 备注 (可选)
   updatedAt?: number      // 更新时间戳 (毫秒，可选)
+  isManual?: boolean      // 是否为手动添加的任务（非从笔记块添加）
 }
 
 /**

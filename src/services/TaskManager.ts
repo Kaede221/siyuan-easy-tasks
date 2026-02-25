@@ -25,14 +25,15 @@ export class TaskManager {
   /**
    * 添加任务
    */
-  async addTask(content: string, blockId: string, note?: string): Promise<Task> {
+  async addTask(content: string, blockId: string, note?: string, isManual: boolean = false): Promise<Task> {
     const task: Task = {
       id: this.generateUUID(),
       content,
       blockId,
       status: TaskStatusEnum.TODO,
       createdAt: Date.now(),
-      note
+      note,
+      isManual
     }
 
     this.tasks.push(task)
@@ -161,6 +162,12 @@ export class TaskManager {
    */
   async navigateToBlock(blockId: string): Promise<boolean> {
     try {
+      // 如果是手动添加的任务，不需要跳转
+      if (blockId.startsWith('manual-')) {
+        console.warn('手动添加的任务没有关联的笔记块')
+        return false
+      }
+
       const blockInfo = await this.storageService.getBlockInfo(blockId)
       if (!blockInfo || !blockInfo.exists) {
         console.warn('原始笔记内容已不存在')
