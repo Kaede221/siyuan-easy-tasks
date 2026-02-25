@@ -12,6 +12,21 @@
       </SyButton>
     </div>
 
+    <!-- 添加任务输入区 -->
+    <div class="todo-panel__add-task">
+      <SyInput
+        v-model="newTaskContent"
+        :placeholder="i18n.addTaskPlaceholder"
+        @keyup.enter="handleAddTask"
+      />
+      <SyButton
+        type="primary"
+        @click="handleAddTask"
+      >
+        {{ i18n.addTask }}
+      </SyButton>
+    </div>
+
     <TaskFilter
       v-model="filter"
       :i18n="i18n"
@@ -39,10 +54,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { Task, TaskFilter as TaskFilterType, TaskStatus } from '@/types/todo.d.ts'
+import type { Task, TaskFilter as TaskFilterType, TaskStatus } from '@/types/todo'
 import TaskFilter from './TaskFilter.vue'
 import TaskItem from './TaskItem.vue'
 import SyButton from '@/components/SiyuanTheme/SyButton.vue'
+import SyInput from '@/components/SiyuanTheme/SyInput.vue'
 
 interface Props {
   tasks: Task[]
@@ -54,12 +70,14 @@ interface Emits {
   (e: 'delete', taskId: string): void
   (e: 'navigate', blockId: string): void
   (e: 'batchDeleteCompleted'): void
+  (e: 'addTask', content: string): void
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const filter = ref<TaskFilterType>({})
+const newTaskContent = ref('')
 
 // 过滤任务
 const filteredTasks = computed(() => {
@@ -88,6 +106,14 @@ const sortedTasks = computed(() => {
 const hasCompletedTasks = computed(() => {
   return props.tasks.some(t => t.status === 'completed')
 })
+
+const handleAddTask = () => {
+  const content = newTaskContent.value.trim()
+  if (content) {
+    emit('addTask', content)
+    newTaskContent.value = ''
+  }
+}
 
 const handleStatusChange = (taskId: string, status: TaskStatus) => {
   emit('statusChange', taskId, status)
@@ -130,6 +156,16 @@ const handleBatchDelete = () => {
     font-size: 18px;
     font-weight: 600;
     color: var(--b3-theme-on-background);
+  }
+
+  &__add-task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--b3-border-color);
+    background-color: var(--b3-theme-surface);
   }
 
   &__content {

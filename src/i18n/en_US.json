@@ -2,6 +2,8 @@
   "addTopBarIcon": "Easy Tasks",
   "todoPlugin": "Task Manager",
   "addToTodo": "Add to Todo",
+  "addTask": "Add Task",
+  "addTaskPlaceholder": "Enter task content, press Enter to add...",
   "taskList": "Task List",
   "allTasks": "All Tasks",
   "todoTasks": "Todo",

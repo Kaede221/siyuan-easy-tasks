@@ -2,6 +2,8 @@
   "addTopBarIcon": "Easy Tasks",
   "todoPlugin": "任务管理",
   "addToTodo": "添加到待办",
+  "addTask": "添加任务",
+  "addTaskPlaceholder": "输入任务内容，按回车添加...",
   "taskList": "任务列表",
   "allTasks": "全部任务",
   "todoTasks": "待完成",

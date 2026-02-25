@@ -15,6 +15,7 @@
           @delete="handleDelete"
           @navigate="handleNavigate"
           @batch-delete-completed="handleBatchDeleteCompleted"
+          @add-task="handleAddTaskManually"
         />
       </div>
     </div>
@@ -25,7 +26,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { usePlugin, getTaskManager } from '@/main'
 import TodoPanel from '@/components/Todo/TodoPanel.vue'
-import type { Task, TaskStatus } from '@/types/todo.d.ts'
+import type { Task, TaskStatus } from '@/types/todo'
 import { showNotification } from '@/utils/notification'
 
 const plugin = usePlugin()
@@ -104,6 +105,20 @@ const handleBatchDeleteCompleted = async () => {
 const addTaskFromSelection = async (content: string, blockId: string) => {
   try {
     await taskManager.addTask(content, blockId)
+    refreshTasks()
+    showNotification(i18n.value.taskAdded, 'success')
+  } catch (error) {
+    console.error('添加任务失败:', error)
+    showNotification(i18n.value.saveFailed, 'error')
+  }
+}
+
+// 手动添加任务（从弹窗输入框）
+const handleAddTaskManually = async (content: string) => {
+  try {
+    // 使用一个特殊的 blockId 表示手动添加的任务
+    const manualBlockId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    await taskManager.addTask(content, manualBlockId)
     refreshTasks()
     showNotification(i18n.value.taskAdded, 'success')
   } catch (error) {

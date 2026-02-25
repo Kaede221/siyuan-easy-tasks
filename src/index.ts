@@ -97,6 +97,11 @@ export default class PluginSample extends Plugin {
   }
 
   openSetting() {
-    window._sy_plugin_sample.openSetting()
+    // 显示开发中提示
+    if (window.siyuan && (window.siyuan as any).showMessage) {
+      (window.siyuan as any).showMessage('设置功能开发中 / Settings under development', 3000, 'info')
+    } else {
+      alert('设置功能开发中 / Settings under development')
+    }
   }
 }
