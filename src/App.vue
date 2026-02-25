@@ -1,9 +1,20 @@
 <template>
   <div class="plugin-app-main">
     <!-- Todo Panel -->
-    <div v-if="showTodoPanel" class="todo-panel-container">
-      <div class="todo-panel-backdrop" @click="closeTodoPanel"></div>
-      <div class="todo-panel-wrapper">
+    <div
+      v-if="showTodoPanel"
+      class="todo-panel-container"
+      style="view-transition-name: todo-panel-container"
+    >
+      <div
+        class="todo-panel-backdrop"
+        @click="closeTodoPanel"
+        style="view-transition-name: todo-panel-backdrop"
+      ></div>
+      <div
+        class="todo-panel-wrapper"
+        style="view-transition-name: todo-panel-wrapper"
+      >
         <div class="todo-panel-header">
           <h2>{{ i18n.todoPlugin }}</h2>
           <button class="close-btn" @click="closeTodoPanel">×</button>
@@ -55,13 +66,17 @@ const withTransition = async (updateCallback: () => void | Promise<void>) => {
 
 // 打开 Todo 面板
 const openTodoPanel = () => {
-  showTodoPanel.value = true;
-  refreshTasks();
+  withTransition(() => {
+    showTodoPanel.value = true;
+    refreshTasks();
+  });
 };
 
 // 关闭 Todo 面板
 const closeTodoPanel = () => {
-  showTodoPanel.value = false;
+  withTransition(() => {
+    showTodoPanel.value = false;
+  });
 };
 
 // 刷新任务列表
