@@ -40,9 +40,8 @@
     </div>
 
     <div class="task-item__actions">
-      <!-- 只有手动添加的任务才显示编辑按钮 -->
+      <!-- 所有任务都显示编辑按钮，但从笔记添加的任务只能编辑备注 -->
       <button
-        v-if="task.isManual"
         class="task-item__edit"
         :title="i18n.editTask"
         @click="handleEdit"
