@@ -22,7 +22,7 @@ defineProps({
     default: 12,
   },
   disabled: Boolean,
-})
+});
 </script>
 
 <style lang="scss" scoped>

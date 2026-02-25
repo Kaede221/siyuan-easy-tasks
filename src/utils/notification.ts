@@ -2,22 +2,28 @@
  * 通知和错误处理工具
  */
 
-type NotificationType = 'info' | 'success' | 'warning' | 'error'
+import { pushMsg, pushErrMsg } from "@/api";
+
+type NotificationType = "info" | "success" | "warning" | "error";
 
 /**
  * 显示通知
  */
-export function showNotification(message: string, type: NotificationType = 'info'): void {
-  // 使用思源笔记的通知API
-  if (window.siyuan) {
-    const siyuan = window.siyuan as any
-    if (siyuan.showMessage) {
-      siyuan.showMessage(message, -1, type)
+export async function showNotification(
+  message: string,
+  type: NotificationType = "info",
+  timeout: number = 7000,
+): Promise<void> {
+  try {
+    // 使用思源笔记的通知API
+    if (type === "error") {
+      await pushErrMsg(message, timeout);
     } else {
-      console.log(`[${type.toUpperCase()}] ${message}`)
+      await pushMsg(message, timeout);
     }
-  } else {
-    console.log(`[${type.toUpperCase()}] ${message}`)
+  } catch (error) {
+    console.error("显示通知失败:", error);
+    console.log(`[${type.toUpperCase()}] ${message}`);
   }
 }
 
@@ -28,7 +34,7 @@ export function logError(
   type: string,
   message: string,
   error: Error,
-  context?: any
+  context?: any,
 ): void {
   console.error({
     timestamp: new Date().toISOString(),
@@ -36,6 +42,6 @@ export function logError(
     message,
     error: error.message,
     stack: error.stack,
-    context
-  })
+    context,
+  });
 }

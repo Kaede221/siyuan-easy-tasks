@@ -97,10 +97,10 @@ const handleStatusChange = async (taskId: string, status: TaskStatus) => {
       status === "completed"
         ? i18n.value.taskCompleted
         : i18n.value.taskUncompleted;
-    showNotification(message, "success");
+    await showNotification(message, "success");
   } catch (error) {
     console.error("更新任务状态失败:", error);
-    showNotification(i18n.value.saveFailed, "error");
+    await showNotification(i18n.value.saveFailed, "error");
   }
 };
 
@@ -112,10 +112,10 @@ const handleDelete = async (taskId: string) => {
       refreshTasks();
     });
 
-    showNotification(i18n.value.taskDeleted, "success");
+    await showNotification(i18n.value.taskDeleted, "success");
   } catch (error) {
     console.error("删除任务失败:", error);
-    showNotification(i18n.value.saveFailed, "error");
+    await showNotification(i18n.value.saveFailed, "error");
   }
 };
 
@@ -123,7 +123,7 @@ const handleDelete = async (taskId: string) => {
 const handleNavigate = async (blockId: string) => {
   const success = await taskManager.navigateToBlock(blockId);
   if (!success) {
-    showNotification(i18n.value.blockNotFound, "warning");
+    await showNotification(i18n.value.blockNotFound, "warning");
   }
 };
 
@@ -135,10 +135,10 @@ const handleBatchDeleteCompleted = async () => {
       refreshTasks();
     });
 
-    showNotification(i18n.value.taskDeleted, "success");
+    await showNotification(i18n.value.taskDeleted, "success");
   } catch (error) {
     console.error("批量删除失败:", error);
-    showNotification(i18n.value.saveFailed, "error");
+    await showNotification(i18n.value.saveFailed, "error");
   }
 };
 
@@ -150,10 +150,10 @@ const addTaskFromSelection = async (content: string, blockId: string, isManual: 
       refreshTasks();
     });
 
-    showNotification(i18n.value.taskAdded, "success");
+    await showNotification(i18n.value.taskAdded, "success");
   } catch (error) {
     console.error("添加任务失败:", error);
-    showNotification(i18n.value.saveFailed, "error");
+    await showNotification(i18n.value.saveFailed, "error");
   }
 };
 
@@ -166,10 +166,10 @@ const handleAddTaskManually = async (content: string, note?: string) => {
       refreshTasks();
     });
 
-    showNotification(i18n.value.taskAdded, "success");
+    await showNotification(i18n.value.taskAdded, "success");
   } catch (error) {
     console.error("添加任务失败:", error);
-    showNotification(i18n.value.saveFailed, "error");
+    await showNotification(i18n.value.saveFailed, "error");
   }
 };
 
@@ -181,10 +181,10 @@ const handleEditTask = async (taskId: string, updates: { content: string; note?:
       refreshTasks();
     });
 
-    showNotification(i18n.value.taskUpdated, "success");
+    await showNotification(i18n.value.taskUpdated, "success");
   } catch (error) {
     console.error("更新任务失败:", error);
-    showNotification(i18n.value.saveFailed, "error");
+    await showNotification(i18n.value.saveFailed, "error");
   }
 };
 

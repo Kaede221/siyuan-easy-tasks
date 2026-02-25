@@ -13,7 +13,9 @@
         @click="handleOpenAddDialog"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+          <path
+            d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"
+          />
         </svg>
       </button>
       <SyButton
@@ -83,7 +85,11 @@ interface Emits {
   (e: "navigate", blockId: string): void;
   (e: "batchDeleteCompleted"): void;
   (e: "addTask", content: string, note?: string): void;
-  (e: "editTask", taskId: string, updates: { content: string; note?: string }): void;
+  (
+    e: "editTask",
+    taskId: string,
+    updates: { content: string; note?: string },
+  ): void;
 }
 
 const props = defineProps<Props>();
@@ -121,7 +127,7 @@ const sortedTasks = computed(() => {
   return [...filteredTasks.value].sort((a, b) => {
     // 首先按状态排序：待完成的任务在前，已完成的在后
     if (a.status !== b.status) {
-      return a.status === 'todo' ? -1 : 1;
+      return a.status === "todo" ? -1 : 1;
     }
     // 相同状态下，按创建时间倒序排序（新的在前）
     return b.createdAt - a.createdAt;
@@ -139,7 +145,7 @@ const handleOpenAddDialog = () => {
 };
 
 const handleEdit = (taskId: string) => {
-  const task = props.tasks.find(t => t.id === taskId);
+  const task = props.tasks.find((t) => t.id === taskId);
   if (task) {
     editingTask.value = task;
     showTaskDialog.value = true;

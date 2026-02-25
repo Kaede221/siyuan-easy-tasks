@@ -1,78 +1,77 @@
-import {
-  Plugin,
-} from "siyuan";
-import { createApp, App as VueApp } from 'vue'
-import App from './App.vue'
-import { StorageService } from './services/StorageService'
-import { TaskManager } from './services/TaskManager'
-import { showNotification } from './utils/notification'
+import { Plugin } from "siyuan";
+import { createApp, App as VueApp } from "vue";
+import App from "./App.vue";
+import { StorageService } from "./services/StorageService";
+import { TaskManager } from "./services/TaskManager";
+import { showNotification } from "./utils/notification";
 
-let plugin: Plugin | null = null
-let storageService: StorageService | null = null
-let taskManager: TaskManager | null = null
+let plugin: Plugin | null = null;
+let storageService: StorageService | null = null;
+let taskManager: TaskManager | null = null;
 
 export function usePlugin(pluginProps?: Plugin): Plugin {
   if (pluginProps) {
-    plugin = pluginProps
+    plugin = pluginProps;
   }
   if (!plugin && !pluginProps) {
-    console.error('need bind plugin')
+    console.error("need bind plugin");
   }
-  return plugin as Plugin
+  return plugin as Plugin;
 }
 
 export function getTaskManager(): TaskManager {
   if (!taskManager) {
-    throw new Error('TaskManager not initialized')
+    throw new Error("TaskManager not initialized");
   }
-  return taskManager
+  return taskManager;
 }
 
 export function getStorageService(): StorageService {
   if (!storageService) {
-    throw new Error('StorageService not initialized')
+    throw new Error("StorageService not initialized");
   }
-  return storageService
+  return storageService;
 }
 
-let app: VueApp | null = null
+let app: VueApp | null = null;
 export async function init(pluginInstance: Plugin) {
   // bind plugin hook
-  usePlugin(pluginInstance)
+  usePlugin(pluginInstance);
 
   // 初始化服务
-  storageService = new StorageService(pluginInstance)
-  taskManager = new TaskManager(storageService)
+  storageService = new StorageService(pluginInstance);
+  taskManager = new TaskManager(storageService);
 
   // 加载任务数据
   try {
-    await taskManager.initialize()
+    await taskManager.initialize();
   } catch (error) {
-    console.error('初始化任务数据失败:', error)
-    showNotification('任务数据加载失败', 'error')
+    console.error("初始化任务数据失败:", error);
+    showNotification("任务数据加载失败", "error").catch((err) =>
+      console.error("显示通知失败:", err),
+    );
   }
 
   // 创建 Vue 应用
-  const div = document.createElement('div')
-  div.classList.add('siyuan-easy-tasks-app')
-  div.id = 'siyuan-easy-tasks'
-  app = createApp(App)
-  app.mount(div)
-  document.body.appendChild(div)
+  const div = document.createElement("div");
+  div.classList.add("siyuan-easy-tasks-app");
+  div.id = "siyuan-easy-tasks";
+  app = createApp(App);
+  app.mount(div);
+  document.body.appendChild(div);
 }
 
 export function destroy() {
   if (app) {
-    app.unmount()
+    app.unmount();
   }
-  const div = document.getElementById('siyuan-easy-tasks')
+  const div = document.getElementById("siyuan-easy-tasks");
   if (div) {
-    document.body.removeChild(div)
+    document.body.removeChild(div);
   }
 
   // 清理服务
-  taskManager = null
-  storageService = null
-  plugin = null
+  taskManager = null;
+  storageService = null;
+  plugin = null;
 }
-

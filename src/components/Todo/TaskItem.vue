@@ -47,7 +47,9 @@
         @click="handleEdit"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+          <path
+            d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"
+          />
         </svg>
       </button>
       <button
@@ -56,7 +58,9 @@
         @click="handleDelete"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M6.5 1h3a.5.5 0 0 1 .5.5V2h-4v-.5a.5.5 0 0 1 .5-.5ZM11 2v-.5A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5V2H2.5a.5.5 0 0 0 0 1h.5v10.5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5V3h.5a.5.5 0 0 0 0-1H11ZM4 3h8v10.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V3Zm2.5 2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5Zm3 0a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5Z"/>
+          <path
+            d="M6.5 1h3a.5.5 0 0 1 .5.5V2h-4v-.5a.5.5 0 0 1 .5-.5ZM11 2v-.5A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5V2H2.5a.5.5 0 0 0 0 1h.5v10.5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5V3h.5a.5.5 0 0 0 0-1H11ZM4 3h8v10.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V3Zm2.5 2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5Zm3 0a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5Z"
+          />
         </svg>
       </button>
     </div>
@@ -64,46 +68,46 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Task } from '@/types/todo'
-import SyCheckbox from '@/components/SiyuanTheme/SyCheckbox.vue'
+import { computed } from "vue";
+import type { Task } from "@/types/todo";
+import SyCheckbox from "@/components/SiyuanTheme/SyCheckbox.vue";
 
 interface Props {
-  task: Task
-  i18n: Record<string, string>
+  task: Task;
+  i18n: Record<string, string>;
 }
 
 interface Emits {
-  (e: 'statusChange', taskId: string, status: 'todo' | 'completed'): void
-  (e: 'delete', taskId: string): void
-  (e: 'edit', taskId: string): void
-  (e: 'navigate', blockId: string): void
+  (e: "statusChange", taskId: string, status: "todo" | "completed"): void;
+  (e: "delete", taskId: string): void;
+  (e: "edit", taskId: string): void;
+  (e: "navigate", blockId: string): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
 const handleStatusChange = (checked: boolean) => {
-  const newStatus = checked ? 'completed' : 'todo'
-  emit('statusChange', props.task.id, newStatus)
-}
+  const newStatus = checked ? "completed" : "todo";
+  emit("statusChange", props.task.id, newStatus);
+};
 
 const handleEdit = () => {
-  emit('edit', props.task.id)
-}
+  emit("edit", props.task.id);
+};
 
 const handleDelete = () => {
-  emit('delete', props.task.id)
-}
+  emit("delete", props.task.id);
+};
 
 const handleNavigate = () => {
-  emit('navigate', props.task.blockId)
-}
+  emit("navigate", props.task.blockId);
+};
 
 const formatTime = (timestamp: number): string => {
-  const date = new Date(timestamp)
-  return date.toLocaleString()
-}
+  const date = new Date(timestamp);
+  return date.toLocaleString();
+};
 </script>
 
 <style scoped lang="scss">

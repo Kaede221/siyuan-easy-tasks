@@ -25,7 +25,9 @@
               {{ formData.content }}
             </div>
             <div class="task-content-hint">
-              {{ i18n.taskContentReadonlyHint || '此任务来自笔记块，标题不可编辑' }}
+              {{
+                i18n.taskContentReadonlyHint || "此任务来自笔记块，标题不可编辑"
+              }}
             </div>
           </div>
 
@@ -41,7 +43,9 @@
 
         <div class="task-dialog__footer">
           <SyButton @click="handleCancel">{{ i18n.cancel }}</SyButton>
-          <SyButton type="primary" @click="handleSave">{{ i18n.save }}</SyButton>
+          <SyButton type="primary" @click="handleSave">{{
+            i18n.save
+          }}</SyButton>
         </div>
       </div>
     </Transition>
@@ -49,80 +53,84 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick } from 'vue'
-import type { Task } from '@/types/todo'
-import SyButton from '@/components/SiyuanTheme/SyButton.vue'
-import SyTextarea from '@/components/SiyuanTheme/SyTextarea.vue'
+import { ref, watch, onMounted, nextTick } from "vue";
+import type { Task } from "@/types/todo";
+import SyButton from "@/components/SiyuanTheme/SyButton.vue";
+import SyTextarea from "@/components/SiyuanTheme/SyTextarea.vue";
 
 interface Props {
-  task?: Task | null
-  i18n: Record<string, string>
+  task?: Task | null;
+  i18n: Record<string, string>;
 }
 
 interface Emits {
-  (e: 'save', updates: { content: string; note?: string }): void
-  (e: 'cancel'): void
+  (e: "save", updates: { content: string; note?: string }): void;
+  (e: "cancel"): void;
 }
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const props = defineProps<Props>();
+const emit = defineEmits<Emits>();
 
-const show = ref(false)
-const isEdit = ref(false)
+const show = ref(false);
+const isEdit = ref(false);
 
 const formData = ref({
-  content: '',
-  note: ''
-})
+  content: "",
+  note: "",
+});
 
 // 监听task变化，更新表单数据
-watch(() => props.task, (newTask) => {
-  if (newTask) {
-    isEdit.value = true
-    formData.value = {
-      content: newTask.content,
-      note: newTask.note || ''
+watch(
+  () => props.task,
+  (newTask) => {
+    if (newTask) {
+      isEdit.value = true;
+      formData.value = {
+        content: newTask.content,
+        note: newTask.note || "",
+      };
+    } else {
+      isEdit.value = false;
+      formData.value = {
+        content: "",
+        note: "",
+      };
     }
-  } else {
-    isEdit.value = false
-    formData.value = {
-      content: '',
-      note: ''
-    }
-  }
-}, { immediate: true })
+  },
+  { immediate: true },
+);
 
 onMounted(() => {
   nextTick(() => {
-    show.value = true
-  })
-})
+    show.value = true;
+  });
+});
 
 const handleSave = () => {
   if (!formData.value.content.trim()) {
-    return
+    return;
   }
 
   // 如果是从笔记添加的任务，只更新备注，不更新内容
   if (props.task && !props.task.isManual) {
-    emit('save', {
+    emit("save", {
       content: props.task.content, // 保持原内容不变
-      note: formData.value.note.trim() || undefined
-    })
+      note: formData.value.note.trim() || undefined,
+    });
   } else {
-    emit('save', {
+    emit("save", {
       content: formData.value.content.trim(),
-      note: formData.value.note.trim() || undefined
-    })
+      note: formData.value.note.trim() || undefined,
+    });
   }
-}
+};
 
 const handleCancel = () => {
-  show.value = false
+  show.value = false;
   setTimeout(() => {
-    emit('cancel')
-  }, 250) // 等待动画完成
-}
+    emit("cancel");
+  }, 250); // 等待动画完成
+};
 </script>
 
 <style scoped lang="scss">
@@ -248,7 +256,9 @@ const handleCancel = () => {
 // Dialog 动画
 .dialog-scale-enter-active,
 .dialog-scale-leave-active {
-  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .dialog-scale-enter-from {

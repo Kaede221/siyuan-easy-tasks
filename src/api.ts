@@ -47,7 +47,7 @@ export async function removeNotebook(notebook: NotebookId) {
 }
 
 export async function getNotebookConf(
-  notebook: NotebookId
+  notebook: NotebookId,
 ): Promise<IResGetNotebookConf> {
   let data = { notebook: notebook };
   let url = "/api/notebook/getNotebookConf";
@@ -56,7 +56,7 @@ export async function getNotebookConf(
 
 export async function setNotebookConf(
   notebook: NotebookId,
-  conf: NotebookConf
+  conf: NotebookConf,
 ): Promise<NotebookConf> {
   let data = { notebook: notebook, conf: conf };
   let url = "/api/notebook/setNotebookConf";
@@ -67,7 +67,7 @@ export async function setNotebookConf(
 export async function createDocWithMd(
   notebook: NotebookId,
   path: string,
-  markdown: string
+  markdown: string,
 ): Promise<DocumentId> {
   let data = {
     notebook: notebook,
@@ -81,7 +81,7 @@ export async function createDocWithMd(
 export async function renameDoc(
   notebook: NotebookId,
   path: string,
-  title: string
+  title: string,
 ): Promise<DocumentId> {
   let data = {
     doc: notebook,
@@ -104,7 +104,7 @@ export async function removeDoc(notebook: NotebookId, path: string) {
 export async function moveDocs(
   fromPaths: string[],
   toNotebook: NotebookId,
-  toPath: string
+  toPath: string,
 ) {
   let data = {
     fromPaths: fromPaths,
@@ -117,7 +117,7 @@ export async function moveDocs(
 
 export async function getHPathByPath(
   notebook: NotebookId,
-  path: string
+  path: string,
 ): Promise<string> {
   let data = {
     notebook: notebook,
@@ -137,7 +137,7 @@ export async function getHPathByID(id: BlockId): Promise<string> {
 
 export async function getIDsByHPath(
   notebook: NotebookId,
-  path: string
+  path: string,
 ): Promise<BlockId[]> {
   let data = {
     notebook: notebook,
@@ -151,7 +151,7 @@ export async function getIDsByHPath(
 
 export async function upload(
   assetsDirPath: string,
-  files: any[]
+  files: any[],
 ): Promise<IResUpload> {
   let form = new FormData();
   form.append("assetsDirPath", assetsDirPath);
@@ -169,7 +169,7 @@ export async function insertBlock(
   data: string,
   nextID?: BlockId,
   previousID?: BlockId,
-  parentID?: BlockId
+  parentID?: BlockId,
 ): Promise<IResdoOperations[]> {
   let payload = {
     dataType: dataType,
@@ -185,7 +185,7 @@ export async function insertBlock(
 export async function prependBlock(
   dataType: DataType,
   data: string,
-  parentID: BlockId | DocumentId
+  parentID: BlockId | DocumentId,
 ): Promise<IResdoOperations[]> {
   let payload = {
     dataType: dataType,
@@ -199,7 +199,7 @@ export async function prependBlock(
 export async function appendBlock(
   dataType: DataType,
   data: string,
-  parentID: BlockId | DocumentId
+  parentID: BlockId | DocumentId,
 ): Promise<IResdoOperations[]> {
   let payload = {
     dataType: dataType,
@@ -213,7 +213,7 @@ export async function appendBlock(
 export async function updateBlock(
   dataType: DataType,
   data: string,
-  id: BlockId
+  id: BlockId,
 ): Promise<IResdoOperations[]> {
   let payload = {
     dataType: dataType,
@@ -235,7 +235,7 @@ export async function deleteBlock(id: BlockId): Promise<IResdoOperations[]> {
 export async function moveBlock(
   id: BlockId,
   previousID?: PreviousID,
-  parentID?: ParentID
+  parentID?: ParentID,
 ): Promise<IResdoOperations[]> {
   let data = {
     id: id,
@@ -247,7 +247,7 @@ export async function moveBlock(
 }
 
 export async function getBlockKramdown(
-  id: BlockId
+  id: BlockId,
 ): Promise<IResGetBlockKramdown> {
   let data = {
     id: id,
@@ -257,7 +257,7 @@ export async function getBlockKramdown(
 }
 
 export async function getChildBlocks(
-  id: BlockId
+  id: BlockId,
 ): Promise<IResGetChildBlock[]> {
   let data = {
     id: id,
@@ -269,7 +269,7 @@ export async function getChildBlocks(
 export async function transferBlockRef(
   fromID: BlockId,
   toID: BlockId,
-  refIDs: BlockId[]
+  refIDs: BlockId[],
 ) {
   let data = {
     fromID: fromID,
@@ -283,7 +283,7 @@ export async function transferBlockRef(
 // **************************************** Attributes ****************************************
 export async function setBlockAttrs(
   id: BlockId,
-  attrs: { [key: string]: string }
+  attrs: { [key: string]: string },
 ) {
   let data = {
     id: id,
@@ -294,7 +294,7 @@ export async function setBlockAttrs(
 }
 
 export async function getBlockAttrs(
-  id: BlockId
+  id: BlockId,
 ): Promise<{ [key: string]: string }> {
   let data = {
     id: id,
@@ -323,7 +323,7 @@ export async function getBlockByID(blockId: string): Promise<Block> {
 
 export async function render(
   id: DocumentId,
-  path: string
+  path: string,
 ): Promise<IResGetTemplates> {
   let data = {
     id: id,
@@ -384,7 +384,7 @@ export async function readDir(path: string): Promise<IResReadDir> {
 // **************************************** Export ****************************************
 
 export async function exportMdContent(
-  id: DocumentId
+  id: DocumentId,
 ): Promise<IResExportMdContent> {
   let data = {
     id: id,
@@ -395,7 +395,7 @@ export async function exportMdContent(
 
 export async function exportResources(
   paths: string[],
-  name: string
+  name: string,
 ): Promise<IResExportResources> {
   let data = {
     paths: paths,
@@ -448,7 +448,7 @@ export async function forwardProxy(
   payload: any = {},
   headers: any[] = [],
   timeout: number = 7000,
-  contentType: string = "text/html"
+  contentType: string = "text/html",
 ): Promise<IResForwardProxy> {
   let data = {
     url: url,
