@@ -59,6 +59,16 @@
       @save="handleSaveTask"
       @cancel="handleCancelDialog"
     />
+
+    <!-- 确认弹窗 -->
+    <SyConfirmDialog
+      v-model="showConfirmDialog"
+      :title="confirmDialog.title"
+      :message="confirmDialog.message"
+      :confirm-text="i18n.confirm || '确定'"
+      :cancel-text="i18n.cancel || '取消'"
+      @confirm="handleConfirmAction"
+    />
   </div>
 </template>
 
@@ -73,6 +83,7 @@ import TaskItem from "./TaskItem.vue";
 import TaskDialog from "./TaskEditDialog.vue";
 import SyButton from "@/components/SiyuanTheme/SyButton.vue";
 import SyInput from "@/components/SiyuanTheme/SyInput.vue";
+import SyConfirmDialog from "@/components/SiyuanTheme/SyConfirmDialog.vue";
 
 interface Props {
   tasks: Task[];
@@ -98,6 +109,27 @@ const emit = defineEmits<Emits>();
 const filter = ref<TaskFilterType>({});
 const editingTask = ref<Task | null>(null);
 const showTaskDialog = ref(false);
+
+// 确认弹窗状态
+const showConfirmDialog = ref(false);
+const confirmDialog = ref({
+  title: "",
+  message: "",
+  action: null as (() => void) | null,
+});
+
+// 显示确认弹窗
+const showConfirm = (title: string, message: string, action: () => void) => {
+  confirmDialog.value = { title, message, action };
+  showConfirmDialog.value = true;
+};
+
+// 处理确认操作
+const handleConfirmAction = () => {
+  if (confirmDialog.value.action) {
+    confirmDialog.value.action();
+  }
+};
 
 // 处理关键词变化
 const handleKeywordChange = (keyword: string) => {
@@ -173,9 +205,11 @@ const handleStatusChange = (taskId: string, status: TaskStatus) => {
 };
 
 const handleDelete = (taskId: string) => {
-  if (confirm(props.i18n.deleteConfirm)) {
-    emit("delete", taskId);
-  }
+  showConfirm(
+    props.i18n.deleteTitle || "删除任务",
+    props.i18n.deleteConfirm,
+    () => emit("delete", taskId)
+  );
 };
 
 const handleNavigate = (blockId: string) => {
@@ -183,9 +217,11 @@ const handleNavigate = (blockId: string) => {
 };
 
 const handleBatchDelete = () => {
-  if (confirm(props.i18n.batchDeleteConfirm)) {
-    emit("batchDeleteCompleted");
-  }
+  showConfirm(
+    props.i18n.batchDeleteTitle || "批量删除",
+    props.i18n.batchDeleteConfirm,
+    () => emit("batchDeleteCompleted")
+  );
 };
 </script>
 

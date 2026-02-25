@@ -246,7 +246,7 @@ const handleCancel = () => {
 
   &__footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 12px;
     padding: 16px;
     border-top: 1px solid var(--b3-border-color);
