@@ -1,3 +1,28 @@
 {
-  "addTopBarIcon": "PluginSampleViteVue"
+  "addTopBarIcon": "Easy Tasks",
+  "todoPlugin": "Task Manager",
+  "addToTodo": "Add to Todo",
+  "taskList": "Task List",
+  "allTasks": "All Tasks",
+  "todoTasks": "Todo",
+  "completedTasks": "Completed",
+  "searchPlaceholder": "Search tasks...",
+  "emptyState": "No tasks yet",
+  "noMatchResults": "No matching results",
+  "deleteTask": "Delete Task",
+  "deleteConfirm": "Are you sure to delete this task?",
+  "batchDeleteCompleted": "Clear Completed",
+  "batchDeleteConfirm": "Are you sure to delete all completed tasks?",
+  "taskAdded": "Task added",
+  "taskDeleted": "Task deleted",
+  "taskCompleted": "Task completed",
+  "taskUncompleted": "Task marked as todo",
+  "blockNotFound": "Original note content not found",
+  "navigateFailed": "Navigation failed, please try again",
+  "saveFailed": "Save failed, please retry",
+  "loadFailed": "Failed to load task data, initialized empty list",
+  "createdAt": "Created at",
+  "completedAt": "Completed at",
+  "jumpToSource": "Jump to source"
 }
+

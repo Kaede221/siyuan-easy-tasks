@@ -1,182 +1,136 @@
 <template>
   <div class="plugin-app-main">
-
-    <div class="demo">
-      <!-- Show text in siyuan at center -->
-      <div>Hello Siyuan.</div>
-
-
-      <div>
-        Use Siyuan Style components
-      </div>
-      <div class="row">
-        Checkbox:
-        <SyCheckbox
-          v-model="isChecked"
-        />
-        ({{ isChecked ? 'checked' : 'unchecked' }})
-      </div>
-      <div class="row">
-        <SyIcon
-          name="iconSiYuan"
-        />
-        <SyIcon
-          name="iconSiYuan"
-          size="20px"
-        />
-        <SyIcon
-          name="iconSiYuan"
-          size="30px"
-        />
-      </div>
-      <div class="col">
-        <SyInput
-          v-model="inputValue"
-        />
-        <div>
-          {{ inputValue }}
+    <!-- Todo Panel -->
+    <div v-if="showTodoPanel" class="todo-panel-container">
+      <div class="todo-panel-backdrop" @click="closeTodoPanel"></div>
+      <div class="todo-panel-wrapper">
+        <div class="todo-panel-header">
+          <h2>{{ i18n.todoPlugin }}</h2>
+          <button class="close-btn" @click="closeTodoPanel">×</button>
         </div>
-      </div>
-      <div class="col">
-        <SySelect
-          v-model="selectValue"
-          :options="selectOptions"
+        <TodoPanel
+          :tasks="tasks"
+          :i18n="i18n"
+          @status-change="handleStatusChange"
+          @delete="handleDelete"
+          @navigate="handleNavigate"
+          @batch-delete-completed="handleBatchDeleteCompleted"
         />
-        <div>
-          selected value: {{ selectValue }}
-        </div>
-        <div>
-          selected text: {{ selectOptions.find(option => option.value === selectValue)?.text }}
-        </div>
       </div>
-
-      <div class="col">
-        <SyTextarea
-          v-model="textareaValue"
-        />
-        <div>
-          {{ textareaValue }}
-        </div>
-      </div>
-      <SyButton
-        @click="showAllValues"
-      >
-        Show All Values
-      </SyButton>
-      <SyButton
-        @click="openSetting"
-      >
-        Open Setting
-      </SyButton>
-
-      <Teleport
-        :to="statusRef"
-        v-if="statusRef"
-      >
-        <SyIcon
-          name="iconHeart"
-          style="
-            color: green;
-          "
-        />
-      </Teleport>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import SyButton from '@/components/SiyuanTheme/SyButton.vue'
-import SyCheckbox from '@/components/SiyuanTheme/SyCheckbox.vue'
-import SyIcon from '@/components/SiyuanTheme/SyIcon.vue'
-import SyInput from '@/components/SiyuanTheme/SyInput.vue'
-import SySelect from '@/components/SiyuanTheme/SySelect.vue'
-import SyTextarea from '@/components/SiyuanTheme/SyTextarea.vue'
-import { usePlugin } from '@/main'
-import { onMounted, ref, watchEffect } from 'vue'
-
-
-const isChecked = ref(false)
-
-const inputValue = ref('')
-
-const selectValue = ref()
-const selectOptions = ref([
-  { value: '1', text: 'Option 1' },
-  { value: '2', text: 'Option 2' },
-  { value: '3', text: 'Option 3' },
-])
-
-const textareaValue = ref('')
-
-const showAllValues = () => {
-  alert(`
-    isChecked: ${isChecked.value}
-    inputValue: ${inputValue.value}
-    selectValue: ${selectValue.value}
-    textareaValue: ${textareaValue.value}
-  `)
-}
-
-const openSetting = () => {
-  alert('Need open plugin setting.')
-}
+import { ref, onMounted, computed } from 'vue'
+import { usePlugin, getTaskManager } from '@/main'
+import TodoPanel from '@/components/Todo/TodoPanel.vue'
+import type { Task, TaskStatus } from '@/types/todo.d.ts'
+import { showNotification } from '@/utils/notification'
 
 const plugin = usePlugin()
-console.log('plugin is ', plugin)
+const taskManager = getTaskManager()
 
+const showTodoPanel = ref(false)
+const tasks = ref<Task[]>([])
 
-// add top bar button
-plugin.addTopBar({
-  icon: 'iconHeart',
-  title: 'Plugin Sample',
-  callback: () => {
-    alert('Hello Siyuan.')
-  },
+// 国际化
+const i18n = computed(() => {
+  return plugin.i18n as Record<string, string>
 })
 
-const statusRef = ref<HTMLDivElement>()
-watchEffect(() => {
-  console.log('statusRef is ', statusRef.value)
-})
-// two ways to add status bar
-onMounted(() => {
-  // 1. use Teleport in Vue way
-  // show as a green heart icon
-  const status = document.getElementById('status') as HTMLDivElement
-  if (status) {
-    // delay 5 seconds to bind statusRef
-    // avoid status is not ready
-    setTimeout(() => {
-      statusRef.value = status
-    }, 5000)
+// 打开 Todo 面板
+const openTodoPanel = () => {
+  showTodoPanel.value = true
+  refreshTasks()
+}
+
+// 关闭 Todo 面板
+const closeTodoPanel = () => {
+  showTodoPanel.value = false
+}
+
+// 刷新任务列表
+const refreshTasks = () => {
+  tasks.value = taskManager.getAllTasks()
+}
+
+// 处理状态变更
+const handleStatusChange = async (taskId: string, status: TaskStatus) => {
+  try {
+    await taskManager.updateTaskStatus(taskId, status)
+    refreshTasks()
+    const message = status === 'completed' ? i18n.value.taskCompleted : i18n.value.taskUncompleted
+    showNotification(message, 'success')
+  } catch (error) {
+    console.error('更新任务状态失败:', error)
+    showNotification(i18n.value.saveFailed, 'error')
   }
+}
 
+// 处理删除
+const handleDelete = async (taskId: string) => {
+  try {
+    await taskManager.deleteTask(taskId)
+    refreshTasks()
+    showNotification(i18n.value.taskDeleted, 'success')
+  } catch (error) {
+    console.error('删除任务失败:', error)
+    showNotification(i18n.value.saveFailed, 'error')
+  }
+}
 
-  // 2. use addStatusBar in siyuan plugin way
-  // show as a red heart icon
-  const tempStatus = document.createElement('div')
-  tempStatus.classList.add('temp-status')
-  tempStatus.innerHTML = `
-    <svg style="width: 12px; height: 12px; color: red;">
-      <use xlink:href="#iconHeart"></use>
-    </svg>
-  `
+// 处理导航
+const handleNavigate = async (blockId: string) => {
+  const success = await taskManager.navigateToBlock(blockId)
+  if (!success) {
+    showNotification(i18n.value.blockNotFound, 'warning')
+  }
+}
 
-  plugin.addStatusBar({
-    element: tempStatus,
-    position: 'right',
-  })
-})
+// 处理批量删除已完成任务
+const handleBatchDeleteCompleted = async () => {
+  try {
+    await taskManager.batchDeleteCompleted()
+    refreshTasks()
+    showNotification(i18n.value.taskDeleted, 'success')
+  } catch (error) {
+    console.error('批量删除失败:', error)
+    showNotification(i18n.value.saveFailed, 'error')
+  }
+}
 
+// 添加任务（从右键菜单调用）
+const addTaskFromSelection = async (content: string, blockId: string) => {
+  try {
+    await taskManager.addTask(content, blockId)
+    refreshTasks()
+    showNotification(i18n.value.taskAdded, 'success')
+  } catch (error) {
+    console.error('添加任务失败:', error)
+    showNotification(i18n.value.saveFailed, 'error')
+  }
+}
 
 onMounted(() => {
-  window._sy_plugin_sample = {}
-  window._sy_plugin_sample.openSetting = openSetting
+  // 添加顶部栏图标
+  plugin.addTopBar({
+    icon: 'iconList',
+    title: i18n.value.todoPlugin,
+    callback: () => {
+      openTodoPanel()
+    },
+  })
+
+  // 暴露全局方法供插件使用
+  window._sy_plugin_sample = {
+    openTodoPanel,
+    closeTodoPanel,
+    addTaskFromSelection,
+  }
 })
 </script>
 
-
-<!-- 局部样式 -->
 <style lang="scss" scoped>
 .plugin-app-main {
   width: 100%;
@@ -184,35 +138,82 @@ onMounted(() => {
   max-height: 100vh;
   box-sizing: border-box;
   pointer-events: none;
-
   position: absolute;
   top: 0;
   left: 0;
   z-index: 4;
+}
+
+.todo-panel-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.todo-panel-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.todo-panel-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 800px;
+  height: 80%;
+  max-height: 600px;
+  background-color: var(--b3-theme-background);
+  border-radius: var(--b3-border-radius);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.todo-panel-header {
+  display: flex;
   align-items: center;
-  flex-wrap: nowrap;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--b3-border-color);
+  background-color: var(--b3-theme-surface);
 
-  .demo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    pointer-events: auto;
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--b3-theme-on-background);
+  }
 
-    z-index: 10;
-
-    background-color: var(--b3-theme-surface);
+  .close-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--b3-theme-on-surface);
     border-radius: var(--b3-border-radius);
-    border: 1px solid var(--b3-border-color);
-    padding: 16px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--b3-list-hover);
+    }
   }
 }
 </style>
 
-<!-- 全局样式 -->
 <style lang="scss">
 .siyuan-easy-tasks-app {
   width: 100vw;
@@ -223,19 +224,5 @@ onMounted(() => {
   left: 0px;
   pointer-events: none;
   box-sizing: border-box;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-}
-
-.col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
 }
 </style>

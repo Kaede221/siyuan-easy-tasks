@@ -1,3 +1,28 @@
 {
-  "addTopBarIcon": "PluginSampleViteVue"
+  "addTopBarIcon": "Easy Tasks",
+  "todoPlugin": "任务管理",
+  "addToTodo": "添加到待办",
+  "taskList": "任务列表",
+  "allTasks": "全部任务",
+  "todoTasks": "待完成",
+  "completedTasks": "已完成",
+  "searchPlaceholder": "搜索任务...",
+  "emptyState": "暂无任务",
+  "noMatchResults": "无匹配结果",
+  "deleteTask": "删除任务",
+  "deleteConfirm": "确认删除此任务？",
+  "batchDeleteCompleted": "清空已完成",
+  "batchDeleteConfirm": "确认删除所有已完成的任务？",
+  "taskAdded": "任务已添加",
+  "taskDeleted": "任务已删除",
+  "taskCompleted": "任务已完成",
+  "taskUncompleted": "任务已标记为待完成",
+  "blockNotFound": "原始笔记内容已不存在",
+  "navigateFailed": "跳转失败，请稍后重试",
+  "saveFailed": "保存失败，请重试",
+  "loadFailed": "任务数据加载失败，已初始化空列表",
+  "createdAt": "创建于",
+  "completedAt": "完成于",
+  "jumpToSource": "跳转到原文"
 }
+

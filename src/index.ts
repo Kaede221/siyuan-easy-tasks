@@ -52,7 +52,44 @@ export default class PluginSample extends Plugin {
 
     console.log('Plugin loaded, the plugin is ', this)
 
-    init(this)
+    await init(this)
+
+    // 添加右键菜单
+    this.addEditorContextMenu()
+  }
+
+  addEditorContextMenu() {
+    // 添加编辑器右键菜单
+    this.eventBus.on('click-editorcontent', ({ detail }: any) => {
+      const selection = window.getSelection()
+      const selectedText = selection?.toString().trim()
+
+      if (selectedText) {
+        // 获取选中内容所在的块ID
+        const range = selection?.getRangeAt(0)
+        const container = range?.commonAncestorContainer
+        let blockElement = container?.parentElement
+
+        // 向上查找包含 data-node-id 的元素
+        while (blockElement && !blockElement.getAttribute('data-node-id')) {
+          blockElement = blockElement.parentElement
+        }
+
+        const blockId = blockElement?.getAttribute('data-node-id')
+
+        if (blockId) {
+          detail.menu.addItem({
+            icon: 'iconAdd',
+            label: this.i18n.addToTodo,
+            click: () => {
+              if (window._sy_plugin_sample?.addTaskFromSelection) {
+                window._sy_plugin_sample.addTaskFromSelection(selectedText, blockId)
+              }
+            }
+          })
+        }
+      }
+    })
   }
 
   onunload() {
