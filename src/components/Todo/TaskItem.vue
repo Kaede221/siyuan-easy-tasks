@@ -1,5 +1,8 @@
 <template>
-  <div :class="['task-item', `task-item--${task.status}`]">
+  <div
+    :class="['task-item', `task-item--${task.status}`]"
+    :style="{ viewTransitionName: `task-item-${task.id}` }"
+  >
     <div class="task-item__checkbox">
       <SyCheckbox
         :model-value="task.status === 'completed'"
@@ -41,7 +44,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Task } from '@/types/todo.d.ts'
+import type { Task } from '@/types/todo'
 import SyCheckbox from '@/components/SiyuanTheme/SyCheckbox.vue'
 import SyButton from '@/components/SiyuanTheme/SyButton.vue'
 

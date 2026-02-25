@@ -23,127 +23,157 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { usePlugin, getTaskManager } from '@/main'
-import TodoPanel from '@/components/Todo/TodoPanel.vue'
-import type { Task, TaskStatus } from '@/types/todo'
-import { showNotification } from '@/utils/notification'
+import { ref, onMounted, computed, nextTick } from "vue";
+import { usePlugin, getTaskManager } from "@/main";
+import TodoPanel from "@/components/Todo/TodoPanel.vue";
+import type { Task, TaskStatus } from "@/types/todo";
+import { showNotification } from "@/utils/notification";
 
-const plugin = usePlugin()
-const taskManager = getTaskManager()
+const plugin = usePlugin();
+const taskManager = getTaskManager();
 
-const showTodoPanel = ref(false)
-const tasks = ref<Task[]>([])
+const showTodoPanel = ref(false);
+const tasks = ref<Task[]>([]);
 
 // 国际化
 const i18n = computed(() => {
-  return plugin.i18n as Record<string, string>
-})
+  return plugin.i18n as Record<string, string>;
+});
+
+// 封装 View Transition 逻辑
+const withTransition = async (updateCallback: () => void | Promise<void>) => {
+  if (!('startViewTransition' in document)) {
+    await updateCallback();
+    return;
+  }
+
+  (document as any).startViewTransition(async () => {
+    await updateCallback();
+    await nextTick(); // 确保 Vue 完成 DOM 更新
+  });
+};
 
 // 打开 Todo 面板
 const openTodoPanel = () => {
-  showTodoPanel.value = true
-  refreshTasks()
-}
+  showTodoPanel.value = true;
+  refreshTasks();
+};
 
 // 关闭 Todo 面板
 const closeTodoPanel = () => {
-  showTodoPanel.value = false
-}
+  showTodoPanel.value = false;
+};
 
 // 刷新任务列表
 const refreshTasks = () => {
-  tasks.value = taskManager.getAllTasks()
-}
+  tasks.value = [...taskManager.getAllTasks()];
+};
 
 // 处理状态变更
 const handleStatusChange = async (taskId: string, status: TaskStatus) => {
   try {
-    await taskManager.updateTaskStatus(taskId, status)
-    refreshTasks()
-    const message = status === 'completed' ? i18n.value.taskCompleted : i18n.value.taskUncompleted
-    showNotification(message, 'success')
+    await withTransition(async () => {
+      await taskManager.updateTaskStatus(taskId, status);
+      refreshTasks();
+    });
+
+    const message =
+      status === "completed"
+        ? i18n.value.taskCompleted
+        : i18n.value.taskUncompleted;
+    showNotification(message, "success");
   } catch (error) {
-    console.error('更新任务状态失败:', error)
-    showNotification(i18n.value.saveFailed, 'error')
+    console.error("更新任务状态失败:", error);
+    showNotification(i18n.value.saveFailed, "error");
   }
-}
+};
 
 // 处理删除
 const handleDelete = async (taskId: string) => {
   try {
-    await taskManager.deleteTask(taskId)
-    refreshTasks()
-    showNotification(i18n.value.taskDeleted, 'success')
+    await withTransition(async () => {
+      await taskManager.deleteTask(taskId);
+      refreshTasks();
+    });
+
+    showNotification(i18n.value.taskDeleted, "success");
   } catch (error) {
-    console.error('删除任务失败:', error)
-    showNotification(i18n.value.saveFailed, 'error')
+    console.error("删除任务失败:", error);
+    showNotification(i18n.value.saveFailed, "error");
   }
-}
+};
 
 // 处理导航
 const handleNavigate = async (blockId: string) => {
-  const success = await taskManager.navigateToBlock(blockId)
+  const success = await taskManager.navigateToBlock(blockId);
   if (!success) {
-    showNotification(i18n.value.blockNotFound, 'warning')
+    showNotification(i18n.value.blockNotFound, "warning");
   }
-}
+};
 
 // 处理批量删除已完成任务
 const handleBatchDeleteCompleted = async () => {
   try {
-    await taskManager.batchDeleteCompleted()
-    refreshTasks()
-    showNotification(i18n.value.taskDeleted, 'success')
+    await withTransition(async () => {
+      await taskManager.batchDeleteCompleted();
+      refreshTasks();
+    });
+
+    showNotification(i18n.value.taskDeleted, "success");
   } catch (error) {
-    console.error('批量删除失败:', error)
-    showNotification(i18n.value.saveFailed, 'error')
+    console.error("批量删除失败:", error);
+    showNotification(i18n.value.saveFailed, "error");
   }
-}
+};
 
 // 添加任务（从右键菜单调用）
 const addTaskFromSelection = async (content: string, blockId: string) => {
   try {
-    await taskManager.addTask(content, blockId)
-    refreshTasks()
-    showNotification(i18n.value.taskAdded, 'success')
+    await withTransition(async () => {
+      await taskManager.addTask(content, blockId);
+      refreshTasks();
+    });
+
+    showNotification(i18n.value.taskAdded, "success");
   } catch (error) {
-    console.error('添加任务失败:', error)
-    showNotification(i18n.value.saveFailed, 'error')
+    console.error("添加任务失败:", error);
+    showNotification(i18n.value.saveFailed, "error");
   }
-}
+};
 
 // 手动添加任务（从弹窗输入框）
 const handleAddTaskManually = async (content: string) => {
   try {
-    // 使用一个特殊的 blockId 表示手动添加的任务
-    const manualBlockId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    await taskManager.addTask(content, manualBlockId)
-    refreshTasks()
-    showNotification(i18n.value.taskAdded, 'success')
+    await withTransition(async () => {
+      const manualBlockId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      await taskManager.addTask(content, manualBlockId);
+      refreshTasks();
+    });
+
+    showNotification(i18n.value.taskAdded, "success");
   } catch (error) {
-    console.error('添加任务失败:', error)
-    showNotification(i18n.value.saveFailed, 'error')
+    console.error("添加任务失败:", error);
+    showNotification(i18n.value.saveFailed, "error");
   }
-}
+};
 
 onMounted(() => {
   // 添加顶部栏图标
   plugin.addTopBar({
-    icon: 'iconList',
+    icon: "iconList",
     title: i18n.value.todoPlugin,
     callback: () => {
-      openTodoPanel()
+      openTodoPanel();
     },
-  })
+  });
 
   // 暴露全局方法供插件使用
   window._sy_plugin_sample = {
     openTodoPanel,
     closeTodoPanel,
     addTaskFromSelection,
-  }
-})
+  };
+});
 </script>
 
 <style lang="scss" scoped>
@@ -239,5 +269,44 @@ onMounted(() => {
   left: 0px;
   pointer-events: none;
   box-sizing: border-box;
+}
+
+/* View Transitions API 自定义动画 */
+/* 新任务从上方滑入 */
+::view-transition-new(task-item-*) {
+  animation: slide-from-top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 删除任务向下滑出并淡出 */
+::view-transition-old(task-item-*) {
+  animation: slide-to-bottom 0.3s ease-in;
+}
+
+/* 任务位置变化时的平滑过渡 */
+::view-transition-group(task-item-*) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slide-from-top {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-to-bottom {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 }
 </style>

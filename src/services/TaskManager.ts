@@ -44,17 +44,22 @@ export class TaskManager {
    * 更新任务状态
    */
   async updateTaskStatus(taskId: string, status: TaskStatus): Promise<void> {
-    const task = this.tasks.find(t => t.id === taskId)
-    if (!task) {
+    const taskIndex = this.tasks.findIndex(t => t.id === taskId)
+    if (taskIndex === -1) {
       throw new Error(`任务不存在: ${taskId}`)
     }
 
-    task.status = status
-    if (status === TaskStatusEnum.COMPLETED) {
-      task.completedAt = Date.now()
-    } else {
-      delete task.completedAt
+    const task = this.tasks[taskIndex]
+
+    // 创建新的任务对象以触发 Vue 响应式更新
+    const updatedTask: Task = {
+      ...task,
+      status,
+      completedAt: status === TaskStatusEnum.COMPLETED ? Date.now() : undefined
     }
+
+    // 替换任务数组中的任务
+    this.tasks[taskIndex] = updatedTask
 
     await this.storageService.saveTasks(this.tasks)
   }
