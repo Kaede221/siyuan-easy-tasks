@@ -27,6 +27,7 @@
           @navigate="handleNavigate"
           @batch-delete-completed="handleBatchDeleteCompleted"
           @add-task="handleAddTaskManually"
+          @edit-task="handleEditTask"
         />
       </div>
     </div>
@@ -157,17 +158,32 @@ const addTaskFromSelection = async (content: string, blockId: string) => {
 };
 
 // 手动添加任务（从弹窗输入框）
-const handleAddTaskManually = async (content: string) => {
+const handleAddTaskManually = async (content: string, note?: string) => {
   try {
     await withTransition(async () => {
       const manualBlockId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      await taskManager.addTask(content, manualBlockId);
+      await taskManager.addTask(content, manualBlockId, note);
       refreshTasks();
     });
 
     showNotification(i18n.value.taskAdded, "success");
   } catch (error) {
     console.error("添加任务失败:", error);
+    showNotification(i18n.value.saveFailed, "error");
+  }
+};
+
+// 编辑任务
+const handleEditTask = async (taskId: string, updates: { content: string; note?: string }) => {
+  try {
+    await withTransition(async () => {
+      await taskManager.updateTask(taskId, updates);
+      refreshTasks();
+    });
+
+    showNotification(i18n.value.taskUpdated, "success");
+  } catch (error) {
+    console.error("更新任务失败:", error);
     showNotification(i18n.value.saveFailed, "error");
   }
 };

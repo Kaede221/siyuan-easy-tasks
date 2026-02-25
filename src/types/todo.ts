@@ -20,6 +20,8 @@ export interface Task {
   status: TaskStatus      // 任务状态
   createdAt: number       // 创建时间戳 (毫秒)
   completedAt?: number    // 完成时间戳 (毫秒，可选)
+  note?: string           // 备注 (可选)
+  updatedAt?: number      // 更新时间戳 (毫秒，可选)
 }
 
 /**

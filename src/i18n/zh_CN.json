@@ -19,12 +19,22 @@
   "taskDeleted": "任务已删除",
   "taskCompleted": "任务已完成",
   "taskUncompleted": "任务已标记为待完成",
+  "taskUpdated": "任务已更新",
   "blockNotFound": "原始笔记内容已不存在",
   "navigateFailed": "跳转失败，请稍后重试",
   "saveFailed": "保存失败，请重试",
   "loadFailed": "任务数据加载失败，已初始化空列表",
   "createdAt": "创建于",
   "completedAt": "完成于",
-  "jumpToSource": "跳转到原文"
+  "updatedAt": "更新于",
+  "jumpToSource": "跳转到原文",
+  "editTask": "编辑任务",
+  "taskContent": "任务内容",
+  "taskContentPlaceholder": "请输入任务内容...",
+  "taskNote": "备注",
+  "taskNotePlaceholder": "添加备注（可选）...",
+  "save": "保存",
+  "cancel": "取消",
+  "confirm": "确定"
 }
 

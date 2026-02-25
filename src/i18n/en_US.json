@@ -19,12 +19,22 @@
   "taskDeleted": "Task deleted",
   "taskCompleted": "Task completed",
   "taskUncompleted": "Task marked as todo",
+  "taskUpdated": "Task updated",
   "blockNotFound": "Original note content not found",
   "navigateFailed": "Navigation failed, please try again",
   "saveFailed": "Save failed, please retry",
   "loadFailed": "Failed to load task data, initialized empty list",
   "createdAt": "Created at",
   "completedAt": "Completed at",
-  "jumpToSource": "Jump to source"
+  "updatedAt": "Updated at",
+  "jumpToSource": "Jump to source",
+  "editTask": "Edit Task",
+  "taskContent": "Task Content",
+  "taskContentPlaceholder": "Enter task content...",
+  "taskNote": "Note",
+  "taskNotePlaceholder": "Add note (optional)...",
+  "save": "Save",
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 }
 

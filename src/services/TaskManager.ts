@@ -25,19 +25,44 @@ export class TaskManager {
   /**
    * 添加任务
    */
-  async addTask(content: string, blockId: string): Promise<Task> {
+  async addTask(content: string, blockId: string, note?: string): Promise<Task> {
     const task: Task = {
       id: this.generateUUID(),
       content,
       blockId,
       status: TaskStatusEnum.TODO,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      note
     }
 
     this.tasks.push(task)
     await this.storageService.saveTasks(this.tasks)
 
     return task
+  }
+
+  /**
+   * 更新任务
+   */
+  async updateTask(taskId: string, updates: Partial<Pick<Task, 'content' | 'note'>>): Promise<void> {
+    const taskIndex = this.tasks.findIndex(t => t.id === taskId)
+    if (taskIndex === -1) {
+      throw new Error(`任务不存在: ${taskId}`)
+    }
+
+    const task = this.tasks[taskIndex]
+
+    // 创建新的任务对象以触发 Vue 响应式更新
+    const updatedTask: Task = {
+      ...task,
+      ...updates,
+      updatedAt: Date.now()
+    }
+
+    // 替换任务数组中的任务
+    this.tasks[taskIndex] = updatedTask
+
+    await this.storageService.saveTasks(this.tasks)
   }
 
   /**
