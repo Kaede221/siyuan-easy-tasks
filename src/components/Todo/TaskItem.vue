@@ -1,7 +1,6 @@
 <template>
   <div
     :class="['task-item', `task-item--${task.status}`]"
-    :style="{ viewTransitionName: `task-item-${task.id}` }"
   >
     <div class="task-item__checkbox">
       <SyCheckbox
@@ -68,7 +67,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import type { Task } from "@/types/todo";
 import SyCheckbox from "@/components/SiyuanTheme/SyCheckbox.vue";
 

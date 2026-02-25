@@ -1,41 +1,46 @@
 <template>
   <div class="plugin-app-main">
     <!-- Todo Panel -->
-    <div
-      v-if="showTodoPanel"
-      class="todo-panel-container"
-      style="view-transition-name: todo-panel-container"
-    >
+    <Transition name="panel">
       <div
-        class="todo-panel-backdrop"
-        @click="closeTodoPanel"
-        style="view-transition-name: todo-panel-backdrop"
-      ></div>
-      <div
-        class="todo-panel-wrapper"
-        style="view-transition-name: todo-panel-wrapper"
+        v-if="showTodoPanel"
+        class="todo-panel-container"
       >
-        <div class="todo-panel-header">
-          <h2>{{ i18n.todoPlugin }}</h2>
-          <button class="close-btn" @click="closeTodoPanel">×</button>
-        </div>
-        <TodoPanel
-          :tasks="tasks"
-          :i18n="i18n"
-          @status-change="handleStatusChange"
-          @delete="handleDelete"
-          @navigate="handleNavigate"
-          @batch-delete-completed="handleBatchDeleteCompleted"
-          @add-task="handleAddTaskManually"
-          @edit-task="handleEditTask"
-        />
+        <Transition name="backdrop">
+          <div
+            v-if="showTodoPanel"
+            class="todo-panel-backdrop"
+            @click="closeTodoPanel"
+          ></div>
+        </Transition>
+        <Transition name="wrapper">
+          <div
+            v-if="showTodoPanel"
+            class="todo-panel-wrapper"
+          >
+            <div class="todo-panel-header">
+              <h2>{{ i18n.todoPlugin }}</h2>
+              <button class="close-btn" @click="closeTodoPanel">×</button>
+            </div>
+            <TodoPanel
+              :tasks="tasks"
+              :i18n="i18n"
+              @status-change="handleStatusChange"
+              @delete="handleDelete"
+              @navigate="handleNavigate"
+              @batch-delete-completed="handleBatchDeleteCompleted"
+              @add-task="handleAddTaskManually"
+              @edit-task="handleEditTask"
+            />
+          </div>
+        </Transition>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { usePlugin, getTaskManager } from "@/main";
 import TodoPanel from "@/components/Todo/TodoPanel.vue";
 import type { Task, TaskStatus } from "@/types/todo";
@@ -52,32 +57,15 @@ const i18n = computed(() => {
   return plugin.i18n as Record<string, string>;
 });
 
-// 封装 View Transition 逻辑
-const withTransition = async (updateCallback: () => void | Promise<void>) => {
-  if (!('startViewTransition' in document)) {
-    await updateCallback();
-    return;
-  }
-
-  (document as any).startViewTransition(async () => {
-    await updateCallback();
-    await nextTick(); // 确保 Vue 完成 DOM 更新
-  });
-};
-
 // 打开 Todo 面板
 const openTodoPanel = () => {
-  withTransition(() => {
-    showTodoPanel.value = true;
-    refreshTasks();
-  });
+  showTodoPanel.value = true;
+  refreshTasks();
 };
 
 // 关闭 Todo 面板
 const closeTodoPanel = () => {
-  withTransition(() => {
-    showTodoPanel.value = false;
-  });
+  showTodoPanel.value = false;
 };
 
 // 刷新任务列表
@@ -88,10 +76,8 @@ const refreshTasks = () => {
 // 处理状态变更
 const handleStatusChange = async (taskId: string, status: TaskStatus) => {
   try {
-    await withTransition(async () => {
-      await taskManager.updateTaskStatus(taskId, status);
-      refreshTasks();
-    });
+    await taskManager.updateTaskStatus(taskId, status);
+    refreshTasks();
 
     const message =
       status === "completed"
@@ -107,10 +93,8 @@ const handleStatusChange = async (taskId: string, status: TaskStatus) => {
 // 处理删除
 const handleDelete = async (taskId: string) => {
   try {
-    await withTransition(async () => {
-      await taskManager.deleteTask(taskId);
-      refreshTasks();
-    });
+    await taskManager.deleteTask(taskId);
+    refreshTasks();
 
     await showNotification(i18n.value.taskDeleted, "success");
   } catch (error) {
@@ -130,10 +114,8 @@ const handleNavigate = async (blockId: string) => {
 // 处理批量删除已完成任务
 const handleBatchDeleteCompleted = async () => {
   try {
-    await withTransition(async () => {
-      await taskManager.batchDeleteCompleted();
-      refreshTasks();
-    });
+    await taskManager.batchDeleteCompleted();
+    refreshTasks();
 
     await showNotification(i18n.value.taskDeleted, "success");
   } catch (error) {
@@ -145,10 +127,8 @@ const handleBatchDeleteCompleted = async () => {
 // 添加任务（从右键菜单调用）
 const addTaskFromSelection = async (content: string, blockId: string, isManual: boolean = false) => {
   try {
-    await withTransition(async () => {
-      await taskManager.addTask(content, blockId, undefined, isManual);
-      refreshTasks();
-    });
+    await taskManager.addTask(content, blockId, undefined, isManual);
+    refreshTasks();
 
     await showNotification(i18n.value.taskAdded, "success");
   } catch (error) {
@@ -160,11 +140,9 @@ const addTaskFromSelection = async (content: string, blockId: string, isManual: 
 // 手动添加任务（从弹窗输入框）
 const handleAddTaskManually = async (content: string, note?: string) => {
   try {
-    await withTransition(async () => {
-      const manualBlockId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      await taskManager.addTask(content, manualBlockId, note, true);
-      refreshTasks();
-    });
+    const manualBlockId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    await taskManager.addTask(content, manualBlockId, note, true);
+    refreshTasks();
 
     await showNotification(i18n.value.taskAdded, "success");
   } catch (error) {
@@ -176,10 +154,8 @@ const handleAddTaskManually = async (content: string, note?: string) => {
 // 编辑任务
 const handleEditTask = async (taskId: string, updates: { content: string; note?: string }) => {
   try {
-    await withTransition(async () => {
-      await taskManager.updateTask(taskId, updates);
-      refreshTasks();
-    });
+    await taskManager.updateTask(taskId, updates);
+    refreshTasks();
 
     await showNotification(i18n.value.taskUpdated, "success");
   } catch (error) {
@@ -302,42 +278,45 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
-/* View Transitions API 自定义动画 */
-/* 新任务从上方滑入 */
-::view-transition-new(task-item-*) {
-  animation: slide-from-top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* Vue Transition 动画 */
+/* 面板容器动画 */
+.panel-enter-active,
+.panel-leave-active {
+  transition: opacity 0.3s ease;
 }
 
-/* 删除任务向下滑出并淡出 */
-::view-transition-old(task-item-*) {
-  animation: slide-to-bottom 0.3s ease-in;
+.panel-enter-from,
+.panel-leave-to {
+  opacity: 0;
 }
 
-/* 任务位置变化时的平滑过渡 */
-::view-transition-group(task-item-*) {
-  animation-duration: 0.4s;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+/* 背景遮罩动画 */
+.backdrop-enter-active,
+.backdrop-leave-active {
+  transition: opacity 0.3s ease;
 }
 
-@keyframes slide-from-top {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.backdrop-enter-from,
+.backdrop-leave-to {
+  opacity: 0;
 }
 
-@keyframes slide-to-bottom {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+/* 面板主体动画 */
+.wrapper-enter-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.wrapper-leave-active {
+  transition: all 0.3s ease-in;
+}
+
+.wrapper-enter-from {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+.wrapper-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.95);
 }
 </style>

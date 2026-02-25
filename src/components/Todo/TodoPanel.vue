@@ -37,7 +37,7 @@
         }}
       </div>
 
-      <div v-else class="todo-panel__list">
+      <TransitionGroup v-else name="task-list" tag="div" class="todo-panel__list">
         <TaskItem
           v-for="task in sortedTasks"
           :key="task.id"
@@ -48,7 +48,7 @@
           @edit="handleEdit"
           @navigate="handleNavigate"
         />
-      </div>
+      </TransitionGroup>
     </div>
 
     <!-- 任务弹窗（添加/编辑） -->
@@ -256,5 +256,27 @@ const handleBatchDelete = () => {
   &__list {
     // 任务列表容器
   }
+}
+
+/* 任务列表动画 */
+.task-list-move,
+.task-list-enter-active,
+.task-list-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.task-list-enter-from {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+.task-list-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.task-list-leave-active {
+  position: absolute;
+  width: 100%;
 }
 </style>
