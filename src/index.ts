@@ -59,7 +59,28 @@ export default class PluginSample extends Plugin {
   }
 
   addEditorContextMenu() {
-    // 添加编辑器右键菜单
+    // 添加编辑器右键菜单 - 监听块标菜单事件
+    this.eventBus.on('click-blockicon', ({ detail }: any) => {
+      const blockId = detail.blockElements[0]?.getAttribute('data-node-id')
+
+      if (blockId) {
+        detail.menu.addItem({
+          icon: 'iconAdd',
+          label: this.i18n.addToTodo,
+          click: async () => {
+            // 获取块的内容
+            const blockElement = detail.blockElements[0]
+            const blockContent = blockElement?.textContent?.trim() || ''
+
+            if (blockContent && window._sy_plugin_sample?.addTaskFromSelection) {
+              await window._sy_plugin_sample.addTaskFromSelection(blockContent, blockId)
+            }
+          }
+        })
+      }
+    })
+
+    // 添加编辑器内容右键菜单 - 监听选中文本
     this.eventBus.on('click-editorcontent', ({ detail }: any) => {
       const selection = window.getSelection()
       const selectedText = selection?.toString().trim()
@@ -81,9 +102,9 @@ export default class PluginSample extends Plugin {
           detail.menu.addItem({
             icon: 'iconAdd',
             label: this.i18n.addToTodo,
-            click: () => {
+            click: async () => {
               if (window._sy_plugin_sample?.addTaskFromSelection) {
-                window._sy_plugin_sample.addTaskFromSelection(selectedText, blockId)
+                await window._sy_plugin_sample.addTaskFromSelection(selectedText, blockId)
               }
             }
           })
