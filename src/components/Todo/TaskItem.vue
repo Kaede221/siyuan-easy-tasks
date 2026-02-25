@@ -137,7 +137,6 @@ const formatTime = (timestamp: number): string => {
     padding: 6px 8px;
     background-color: var(--b3-theme-surface);
     border-radius: 4px;
-    border-left: 2px solid var(--b3-theme-primary);
   }
 
   &__meta {
