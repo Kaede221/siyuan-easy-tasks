@@ -1,49 +1,21 @@
 <template>
   <div class="todo-panel">
-    <!-- 添加任务输入区 -->
-    <div class="todo-panel__add-task">
-      <Transition name="fade-scale" mode="out-in">
-        <div
-          v-if="!showAddTaskForm"
-          key="trigger"
-          class="add-task-trigger"
-        >
-          <SyButton type="primary" @click="toggleAddTaskForm(true)">
-            {{ i18n.addTask }}
-          </SyButton>
-        </div>
-        <div
-          v-else
-          key="form"
-          class="add-task-form"
-        >
-          <SyInput
-            v-model="newTaskContent"
-            :placeholder="i18n.addTaskPlaceholder"
-            @keyup.enter="handleAddTask"
-          />
-          <SyTextarea
-            v-model="newTaskNote"
-            :placeholder="i18n.taskNotePlaceholder"
-            :rows="2"
-          />
-          <div class="add-task-actions">
-            <SyButton @click="toggleAddTaskForm(false)">{{ i18n.cancel }}</SyButton>
-            <SyButton type="primary" @click="handleAddTask">
-              {{ i18n.confirm }}
-            </SyButton>
-          </div>
-        </div>
-      </Transition>
-    </div>
-
-    <!-- 搜索和批量操作 -->
+    <!-- 搜索和操作按钮 -->
     <div class="todo-panel__filter">
       <SyInput
         :model-value="filter.keyword || ''"
         :placeholder="i18n.searchPlaceholder"
         @update:model-value="handleKeywordChange"
       />
+      <button
+        class="add-task-btn"
+        :title="i18n.addTask"
+        @click="handleOpenAddDialog"
+      >
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+        </svg>
+      </button>
       <SyButton
         v-if="hasCompletedTasks"
         size="small"
@@ -76,29 +48,28 @@
       </div>
     </div>
 
-    <!-- 编辑任务弹窗 -->
-    <TaskEditDialog
-      v-if="editingTask"
+    <!-- 任务弹窗（添加/编辑） -->
+    <TaskDialog
+      v-if="showTaskDialog"
       :task="editingTask"
       :i18n="i18n"
-      @save="handleSaveEdit"
-      @cancel="handleCancelEdit"
+      @save="handleSaveTask"
+      @cancel="handleCancelDialog"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, Transition } from "vue";
+import { ref, computed } from "vue";
 import type {
   Task,
   TaskFilter as TaskFilterType,
   TaskStatus,
 } from "@/types/todo";
 import TaskItem from "./TaskItem.vue";
-import TaskEditDialog from "./TaskEditDialog.vue";
+import TaskDialog from "./TaskEditDialog.vue";
 import SyButton from "@/components/SiyuanTheme/SyButton.vue";
 import SyInput from "@/components/SiyuanTheme/SyInput.vue";
-import SyTextarea from "@/components/SiyuanTheme/SyTextarea.vue";
 
 interface Props {
   tasks: Task[];
@@ -117,10 +88,8 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const filter = ref<TaskFilterType>({});
-const newTaskContent = ref("");
-const newTaskNote = ref("");
 const editingTask = ref<Task | null>(null);
-const showAddTaskForm = ref(false);
+const showTaskDialog = ref(false);
 
 // 处理关键词变化
 const handleKeywordChange = (keyword: string) => {
@@ -162,36 +131,32 @@ const hasCompletedTasks = computed(() => {
   return props.tasks.some((t) => t.status === "completed");
 });
 
-const handleAddTask = () => {
-  const content = newTaskContent.value.trim();
-  if (content) {
-    const note = newTaskNote.value.trim() || undefined;
-    emit("addTask", content, note);
-    newTaskContent.value = "";
-    newTaskNote.value = "";
-    showAddTaskForm.value = false;
-  }
-};
-
-const toggleAddTaskForm = (show: boolean) => {
-  showAddTaskForm.value = show;
+const handleOpenAddDialog = () => {
+  editingTask.value = null;
+  showTaskDialog.value = true;
 };
 
 const handleEdit = (taskId: string) => {
   const task = props.tasks.find(t => t.id === taskId);
   if (task) {
     editingTask.value = task;
+    showTaskDialog.value = true;
   }
 };
 
-const handleSaveEdit = (updates: { content: string; note?: string }) => {
+const handleSaveTask = (updates: { content: string; note?: string }) => {
   if (editingTask.value) {
+    // 编辑模式
     emit("editTask", editingTask.value.id, updates);
-    editingTask.value = null;
+  } else {
+    // 添加模式
+    emit("addTask", updates.content, updates.note);
   }
+  handleCancelDialog();
 };
 
-const handleCancelEdit = () => {
+const handleCancelDialog = () => {
+  showTaskDialog.value = false;
   editingTask.value = null;
 };
 
@@ -219,58 +184,10 @@ const handleBatchDelete = () => {
   height: 100%;
   background-color: var(--b3-theme-background);
 
-  &__add-task {
-    padding: 16px;
-    border-bottom: 1px solid var(--b3-border-color);
-    background-color: var(--b3-theme-surface);
-
-    .add-task-trigger {
-      display: flex;
-      justify-content: center;
-    }
-
-    .add-task-form {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-
-      // 强制输入框和文本域占满宽度
-      :deep(input.b3-text-field),
-      :deep(textarea.b3-text-field) {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box;
-      }
-
-      .add-task-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-      }
-    }
-  }
-
-  // Transition 动画
-  .fade-scale-enter-active,
-  .fade-scale-leave-active {
-    transition: opacity 0.25s ease, transform 0.25s ease;
-  }
-
-  .fade-scale-enter-from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
-  .fade-scale-leave-to {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-
   &__filter {
     display: flex;
     align-items: stretch;
-    gap: 12px;
+    gap: 8px;
     padding: 12px 16px;
     box-sizing: border-box;
     border-bottom: 1px solid var(--b3-border-color);
@@ -278,6 +195,35 @@ const handleBatchDelete = () => {
 
     > :first-child {
       flex: 1;
+    }
+
+    .add-task-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 1px solid var(--b3-theme-primary);
+      background: var(--b3-theme-primary);
+      color: var(--b3-theme-on-primary);
+      cursor: pointer;
+      border-radius: var(--b3-border-radius);
+      transition: all 0.2s;
+      flex-shrink: 0;
+
+      &:hover {
+        opacity: 0.85;
+        transform: scale(1.05);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      svg {
+        display: block;
+      }
     }
   }
 
