@@ -23,21 +23,15 @@
     </div>
 
     <div class="task-item__actions">
-      <SyButton
-        class="task-item__jump"
-        size="small"
-        @click="handleNavigate"
-      >
-        {{ i18n.jumpToSource }}
-      </SyButton>
-      <SyButton
+      <button
         class="task-item__delete"
-        size="small"
-        type="danger"
+        :title="i18n.deleteTask"
         @click="handleDelete"
       >
-        {{ i18n.deleteTask }}
-      </SyButton>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6.5 1h3a.5.5 0 0 1 .5.5V2h-4v-.5a.5.5 0 0 1 .5-.5ZM11 2v-.5A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5V2H2.5a.5.5 0 0 0 0 1h.5v10.5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5V3h.5a.5.5 0 0 0 0-1H11ZM4 3h8v10.5a.5.5 0 0 1-.5.5h-7a.5.5 0 0 1-.5-.5V3Zm2.5 2a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5Zm3 0a.5.5 0 0 1 .5.5v5a.5.5 0 0 1-1 0v-5a.5.5 0 0 1 .5-.5Z"/>
+        </svg>
+      </button>
     </div>
   </div>
 </template>
@@ -46,7 +40,6 @@
 import { computed } from 'vue'
 import type { Task } from '@/types/todo'
 import SyCheckbox from '@/components/SiyuanTheme/SyCheckbox.vue'
-import SyButton from '@/components/SiyuanTheme/SyButton.vue'
 
 interface Props {
   task: Task
@@ -56,7 +49,6 @@ interface Props {
 interface Emits {
   (e: 'statusChange', taskId: string, status: 'todo' | 'completed'): void
   (e: 'delete', taskId: string): void
-  (e: 'navigate', blockId: string): void
 }
 
 const props = defineProps<Props>()
@@ -69,10 +61,6 @@ const handleStatusChange = (checked: boolean) => {
 
 const handleDelete = () => {
   emit('delete', props.task.id)
-}
-
-const handleNavigate = () => {
-  emit('navigate', props.task.blockId)
 }
 
 const formatTime = (timestamp: number): string => {
@@ -138,9 +126,32 @@ const formatTime = (timestamp: number): string => {
     flex-shrink: 0;
   }
 
-  &__jump,
   &__delete {
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--b3-theme-on-surface);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: var(--b3-list-hover);
+      color: var(--b3-card-error-color);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    svg {
+      display: block;
+    }
   }
 }
 </style>

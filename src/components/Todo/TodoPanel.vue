@@ -46,7 +46,6 @@
           :i18n="i18n"
           @status-change="handleStatusChange"
           @delete="handleDelete"
-          @navigate="handleNavigate"
         />
       </div>
     </div>
@@ -72,7 +71,6 @@ interface Props {
 interface Emits {
   (e: "statusChange", taskId: string, status: TaskStatus): void;
   (e: "delete", taskId: string): void;
-  (e: "navigate", blockId: string): void;
   (e: "batchDeleteCompleted"): void;
   (e: "addTask", content: string): void;
 }
@@ -139,10 +137,6 @@ const handleDelete = (taskId: string) => {
   if (confirm(props.i18n.deleteConfirm)) {
     emit("delete", taskId);
   }
-};
-
-const handleNavigate = (blockId: string) => {
-  emit("navigate", blockId);
 };
 
 const handleBatchDelete = () => {
