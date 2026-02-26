@@ -7,8 +7,6 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.0.1-green.svg)](plugin.json)
 
-[English](README_en.md) | 简体中文
-
 </div>
 
 ## ✨ 功能特性
@@ -34,7 +32,7 @@
 
 ### 方式二：手动安装
 
-1. 从 [Releases](https://github.com/Kaede221/siyuan-easy-tasks) 下载最新版本
+1. 从 [Releases](https://github.com/Kaede221/siyuan-easy-tasks/releases) 下载最新版本
 2. 解压到思源笔记的 `data/plugins/` 目录
 3. 重启思源笔记
 4. 在 `设置` → `插件` 中启用插件
@@ -155,7 +153,7 @@ siyuan-easy-tasks/
 
 ## 📄 许可证
 
-本项目采用 [MIT](LICENSE) 许可证。
+本项目采用 [MIT](https://github.com/Kaede221/siyuan-easy-tasks/blob/main/LICENSE) 许可证。
 
 ## 🙏 致谢
 
