@@ -16,8 +16,5 @@
   "readme": {
     "default": "README.md"
   },
-  "funding": {
-    "custom": ["https://afdian.com/p/c6a64d7812a911f18c955254001e7c00"]
-  },
   "keywords": ["任务管理"]
 }
