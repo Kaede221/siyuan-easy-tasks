@@ -2,7 +2,7 @@
   "name": "Easy Tasks",
   "author": "kaede221",
   "url": "https://github.com/Kaede221/siyuan-easy-tasks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "minAppVersion": "2.10.14",
   "disabledInPublish": true,
   "backends": ["all"],
