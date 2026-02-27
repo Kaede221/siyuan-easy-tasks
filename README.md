@@ -4,8 +4,7 @@
 
 一个简洁高效的思源笔记任务管理插件
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Kaede221/siyuan-easy-tasks/blob/main/LICENSE)
 </div>
 
 ## ✨ 功能特性
