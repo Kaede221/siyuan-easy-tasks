@@ -129,9 +129,9 @@ export default class PluginSample extends Plugin {
     destroy();
   }
 
-  openSetting() {
-    showNotification("开发中").catch((err) =>
-      console.error("显示通知失败:", err),
-    );
-  }
+  // openSetting() {
+  //   showNotification("开发中").catch((err) =>
+  //     console.error("显示通知失败:", err),
+  //   );
+  // }
 }
