@@ -5,7 +5,6 @@
 一个简洁高效的思源笔记任务管理插件
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.0.1-green.svg)](plugin.json)
 
 </div>
 
