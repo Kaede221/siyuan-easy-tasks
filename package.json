@@ -1,6 +1,6 @@
 {
   "name": "siyuan-easy-tasks",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "type": "module",
   "description": "This is a sample plugin based on vite and vue for Siyuan (https://b3log.org/siyuan)",
   "author": "",
