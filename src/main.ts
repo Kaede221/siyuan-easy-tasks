@@ -1,9 +1,8 @@
-import { Plugin } from "siyuan";
+import { Plugin, showMessage } from "siyuan";
 import { createApp, App as VueApp } from "vue";
 import App from "./App.vue";
 import { StorageService } from "./services/StorageService";
 import { TaskManager } from "./services/TaskManager";
-import { showNotification } from "./utils/notification";
 
 let plugin: Plugin | null = null;
 let storageService: StorageService | null = null;
@@ -47,9 +46,7 @@ export async function init(pluginInstance: Plugin) {
     await taskManager.initialize();
   } catch (error) {
     console.error("初始化任务数据失败:", error);
-    showNotification("任务数据加载失败", "error").catch((err) =>
-      console.error("显示通知失败:", err),
-    );
+    showMessage("任务数据加载失败", 0, "error");
   }
 
   // 创建 Vue 应用

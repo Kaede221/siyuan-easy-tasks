@@ -2,7 +2,6 @@ import { Plugin, getFrontend } from "siyuan";
 import PluginInfoString from "@/../plugin.json";
 import { destroy, init } from "@/main";
 import { getBlockByID } from "@/api";
-import { showNotification } from "./utils/notification";
 import "@/index.scss";
 
 let PluginInfo = {

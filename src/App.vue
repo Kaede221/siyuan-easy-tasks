@@ -2,10 +2,7 @@
   <div class="plugin-app-main">
     <!-- Todo Panel -->
     <Transition name="panel">
-      <div
-        v-if="showTodoPanel"
-        class="todo-panel-container"
-      >
+      <div v-if="showTodoPanel" class="todo-panel-container">
         <Transition name="backdrop">
           <div
             v-if="showTodoPanel"
@@ -14,10 +11,7 @@
           ></div>
         </Transition>
         <Transition name="wrapper">
-          <div
-            v-if="showTodoPanel"
-            class="todo-panel-wrapper"
-          >
+          <div v-if="showTodoPanel" class="todo-panel-wrapper">
             <div class="todo-panel-header">
               <h2>{{ i18n.todoPlugin }}</h2>
               <button class="close-btn" @click="closeTodoPanel">×</button>
@@ -44,7 +38,7 @@ import { ref, onMounted, computed } from "vue";
 import { usePlugin, getTaskManager } from "@/main";
 import TodoPanel from "@/components/Todo/TodoPanel.vue";
 import type { Task, TaskStatus } from "@/types/todo";
-import { showNotification } from "@/utils/notification";
+import { showMessage } from "siyuan";
 
 const plugin = usePlugin();
 const taskManager = getTaskManager();
@@ -83,10 +77,10 @@ const handleStatusChange = async (taskId: string, status: TaskStatus) => {
       status === "completed"
         ? i18n.value.taskCompleted
         : i18n.value.taskUncompleted;
-    await showNotification(message, "success");
+    showMessage(message);
   } catch (error) {
+    showMessage(error, 0, "error");
     console.error("更新任务状态失败:", error);
-    await showNotification(i18n.value.saveFailed, "error");
   }
 };
 
@@ -95,11 +89,10 @@ const handleDelete = async (taskId: string) => {
   try {
     await taskManager.deleteTask(taskId);
     refreshTasks();
-
-    await showNotification(i18n.value.taskDeleted, "success");
+    showMessage(i18n.value.taskDeleted);
   } catch (error) {
     console.error("删除任务失败:", error);
-    await showNotification(i18n.value.saveFailed, "error");
+    showMessage(i18n.value.saveFailed, 0, "error");
   }
 };
 
@@ -107,7 +100,7 @@ const handleDelete = async (taskId: string) => {
 const handleNavigate = async (blockId: string) => {
   const success = await taskManager.navigateToBlock(blockId);
   if (!success) {
-    await showNotification(i18n.value.blockNotFound, "warning");
+    showMessage(i18n.value.blockNotFound);
   }
 };
 
@@ -116,24 +109,26 @@ const handleBatchDeleteCompleted = async () => {
   try {
     await taskManager.batchDeleteCompleted();
     refreshTasks();
-
-    await showNotification(i18n.value.taskDeleted, "success");
+    showMessage(i18n.value.taskDeleted);
   } catch (error) {
     console.error("批量删除失败:", error);
-    await showNotification(i18n.value.saveFailed, "error");
+    showMessage(i18n.value.saveFailed, 0, "error");
   }
 };
 
 // 添加任务（从右键菜单调用）
-const addTaskFromSelection = async (content: string, blockId: string, isManual: boolean = false) => {
+const addTaskFromSelection = async (
+  content: string,
+  blockId: string,
+  isManual: boolean = false,
+) => {
   try {
     await taskManager.addTask(content, blockId, undefined, isManual);
     refreshTasks();
-
-    await showNotification(i18n.value.taskAdded, "success");
+    showMessage(i18n.value.taskAdded);
   } catch (error) {
     console.error("添加任务失败:", error);
-    await showNotification(i18n.value.saveFailed, "error");
+    showMessage(i18n.value.saveFailed, 0, "error");
   }
 };
 
@@ -143,24 +138,25 @@ const handleAddTaskManually = async (content: string, note?: string) => {
     const manualBlockId = `manual-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     await taskManager.addTask(content, manualBlockId, note, true);
     refreshTasks();
-
-    await showNotification(i18n.value.taskAdded, "success");
+    showMessage(i18n.value.taskAdded);
   } catch (error) {
     console.error("添加任务失败:", error);
-    await showNotification(i18n.value.saveFailed, "error");
+    showMessage(i18n.value.saveFailed, 0, "error");
   }
 };
 
 // 编辑任务
-const handleEditTask = async (taskId: string, updates: { content: string; note?: string }) => {
+const handleEditTask = async (
+  taskId: string,
+  updates: { content: string; note?: string },
+) => {
   try {
     await taskManager.updateTask(taskId, updates);
     refreshTasks();
-
-    await showNotification(i18n.value.taskUpdated, "success");
+    showMessage(i18n.value.taskUpdated);
   } catch (error) {
     console.error("更新任务失败:", error);
-    await showNotification(i18n.value.saveFailed, "error");
+    showMessage(i18n.value.saveFailed, 0, "error");
   }
 };
 
