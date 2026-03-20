@@ -10,7 +10,7 @@ let PluginInfo = {
 try {
   PluginInfo = PluginInfoString;
 } catch (err) {
-  console.log("Plugin info parse error: ", err);
+  console.error("Plugin info parse error: ", err);
 }
 const { version } = PluginInfo;
 
@@ -44,8 +44,6 @@ export default class PluginSample extends Plugin {
     } catch (err) {
       this.isElectron = false;
     }
-
-    console.log("Plugin loaded, the plugin is ", this);
 
     await init(this);
 
